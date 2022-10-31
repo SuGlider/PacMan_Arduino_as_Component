@@ -99,7 +99,14 @@ Game_Audio_Wav_Class pmEatGhost(pacman_eatghost); // pacman theme
 #define YELLOW  0xFFE0
 #define WHITE   0xFFFF
 
+#if (BOARD_DISP_PARALLEL_CONTROLLER == BOARD_DISP_LCD_RM68120)
+// R5 G6 B5 for RM68120
 #define C16(_rr,_gg,_bb) ((uint16_t)(((_rr & 0xF8) << 8) | ((_gg & 0xFC) << 3) | ((_bb & 0xF8) >> 3)))
+#elif (BOARD_DISP_PARALLEL_CONTROLLER == BOARD_DISP_LCD_RA8875)
+// B5 R5 G6 for RA8875
+#define C16(_rr,_gg,_bb) ((uint16_t)(((_bb & 0xF8) << 8) | ((_rr & 0xF8) << 3) | ((_gg & 0xFC) >> 2)))
+#endif
+
 const uint16_t _paletteW[16] =
 {
   C16(0, 0, 0),
@@ -1613,6 +1620,7 @@ void drawIndexedmap(uint8_t* indexmap, uint16_t x, uint16_t y) {
   uint16_t yt = SCR_HEIGHT - 2 * (x + 8);
    
   bsp_lcd_flush(xt, yt, xt + 16, yt + 16, (void *) screenBuffer);
+  
 }
 
 // Rotated dimensions based on a SCR_w = 480 and SCR_H = 800
@@ -1723,7 +1731,7 @@ void drawButtonFace(uint8_t btId) {
   _x1 = x0 + _w;
   _y1 = y0 + _h;
   bsp_lcd_flush(x0, y0, _x1, _y1, (void *)canvas);
-  delay(1);  // we don't check when it finishes drawing... so just wait few ms
+  //delay(1);  // we don't check when it finishes drawing... so just wait few ms
   free(canvas);
 }
 
