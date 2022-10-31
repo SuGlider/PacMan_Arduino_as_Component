@@ -188,9 +188,9 @@ lcd_disp_t * lcd_parallel8080_init(lcd_cfg_t * config)
         ESP_ERROR_CHECK(esp_lcd_new_panel_ra8875(io_handle, &panel_config, &lcd_panel_handle));
     }
 
-	//ESP_ERROR_CHECK(esp_lcd_panel_reset(lcd_panel_handle));
+	ESP_ERROR_CHECK(esp_lcd_panel_reset(lcd_panel_handle));
     ESP_ERROR_CHECK(esp_lcd_panel_init(lcd_panel_handle));
-	//ESP_ERROR_CHECK(esp_lcd_panel_disp_on_off(lcd_panel_handle, true));
+	ESP_ERROR_CHECK(esp_lcd_panel_disp_off(lcd_panel_handle, false));
 
     disp->handle = lcd_panel_handle;
 
