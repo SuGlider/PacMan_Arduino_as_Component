@@ -47,6 +47,15 @@ static void app_i2c_init(void)
   }
 }
 
+#if (BOARD_DISP_PARALLEL_CONTROLLER > 0)
+volatile bool _disp_flush_ready = false;
+
+static void lcd_8080_flush_ready_cb(lcd_disp_t * disp)
+{
+   _disp_flush_ready = true;
+}
+#endif
+
 void lcd_driver_install(void)
 {
     /* Initialize I2C */
@@ -56,7 +65,7 @@ void lcd_driver_install(void)
     /* Initialize Parallel Display */
     lcd_cfg_t lcd_parallel8080_cfg = {};
     lcd_parallel8080_cfg.driver = (lcd_driver_t) BOARD_DISP_PARALLEL_CONTROLLER;
-    lcd_parallel8080_cfg.flush_ready_cb = NULL;
+    lcd_parallel8080_cfg.flush_ready_cb = lcd_8080_flush_ready_cb;
     lcd_parallel8080 = lcd_parallel8080_init(&lcd_parallel8080_cfg);
     if (lcd_parallel8080 == NULL) {
       printf("lcd_parallel8080_init failed/n");
@@ -136,6 +145,11 @@ void  bsp_lcd_flush(int x0, int y0, int x1, int y1, void *pixels) {
     return;
   }
   lcd_parallel8080_draw(lcd_parallel8080, x0, y0, x1, y1, (void *)pixels);
+
+  // FIX-ME :: delay shall be replaced by a flag set when the display is flushed
+  //vTaskDelay(1);
+  while (!_disp_flush_ready) {}
+  _disp_flush_ready = false;
 }
 
 esp_err_t touchPadRead(uint8_t *numTouchedPoints, uint16_t *scrTouchX, uint16_t *scrTouchY) {
