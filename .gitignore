@@ -1,0 +1,6 @@
+managed_components/
+*.bin
+components/arduino/
+.vscode/
+build/
+dependencies.lock
